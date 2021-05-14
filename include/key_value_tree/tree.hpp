@@ -26,8 +26,8 @@ namespace key_value_tree {
 ///////////////////////////////////////////////////////
 class Tree : private boost::equality_comparable<Tree> /* supply != from == */ {
 public:
-  struct NamedNode;
-  using Parent = std::vector<NamedNode>;
+  struct KeyNodePair;
+  using Parent = std::vector<KeyNodePair>;
   using Int32Leaf = std::int32_t;
   using Float64Leaf = double;
   using StringLeaf = std::string;
@@ -68,12 +68,12 @@ public:
   private:
     boost::variant<boost::recursive_wrapper<Parent>, Int32Leaf, Float64Leaf, StringLeaf> node_;
   };
-  struct NamedNode : private boost::equality_comparable<NamedNode> /* supply != from == */ {
-    NamedNode(const std::string &_name, const Node &_node) : name(_name), node(_node) {}
-    std::string name;
+  struct KeyNodePair : private boost::equality_comparable<KeyNodePair> /* supply != from == */ {
+    KeyNodePair(const std::string &_key, const Node &_node) : key(_key), node(_node) {}
+    std::string key;
     Node node;
-    bool operator==(const NamedNode &other) const {
-      return name == other.name && node == other.node;
+    bool operator==(const KeyNodePair &other) const {
+      return key == other.key && node == other.node;
     }
   };
 
@@ -88,17 +88,17 @@ public:
       static void apply(FlattenTree *const flatten_tree, const Node &node,
                         const std::string &path = "") {
         if (node.isParent()) {
-          for (const NamedNode &child : node.asParent()) {
-            apply(flatten_tree, child.node, path.empty() ? child.name : (path + "/" + child.name));
+          for (const KeyNodePair &child : node.asParent()) {
+            apply(flatten_tree, child.node, path.empty() ? child.key : (path + "/" + child.key));
           }
         } else if (node.isInt32Leaf()) {
-          flatten_tree->int32_keys.push_back(path);
+          flatten_tree->int32_paths.push_back(path);
           flatten_tree->int32_values.push_back(node.asInt32Leaf());
         } else if (node.isFloat64Leaf()) {
-          flatten_tree->float64_keys.push_back(path);
+          flatten_tree->float64_paths.push_back(path);
           flatten_tree->float64_values.push_back(node.asFloat64Leaf());
         } else if (node.isStringLeaf()) {
-          flatten_tree->string_keys.push_back(path);
+          flatten_tree->string_paths.push_back(path);
           flatten_tree->string_values.push_back(node.asStringLeaf());
         }
       }
@@ -116,16 +116,16 @@ private:
   template <typename Value> class MergeTo {
   public:
     MergeTo(Tree *const tree) : tree_(tree) {}
-    void operator()(const std::string &key, const Value &value) const {
-      const boost::tokenizer<boost::char_separator<char>> tokens(
-          key, boost::char_separator<char>(R"(/)"));
+    void operator()(const std::string &path, const Value &value) const {
+      const boost::tokenizer<boost::char_separator<char>> keys(path,
+                                                               boost::char_separator<char>(R"(/)"));
       Node *node = &tree_->root();
-      for (const std::string &token : tokens) {
+      for (const std::string &key : keys) {
         Parent *const parent = &node->asParent();
-        Parent::iterator child = boost::find_if(
-            *parent, [&token](const NamedNode &child) { return child.name == token; });
+        Parent::iterator child =
+            boost::find_if(*parent, [&key](const KeyNodePair &child) { return child.key == key; });
         if (child == parent->end()) {
-          parent->push_back({token, Parent()});
+          parent->push_back({key, Parent()});
           child = parent->end() - 1;
         }
         node = &child->node;
@@ -140,10 +140,10 @@ private:
 public:
   static Tree fromFlattenTree(const FlattenTree &flatten_tree) {
     Tree tree = Parent();
-    boost::for_each(flatten_tree.int32_keys, flatten_tree.int32_values, MergeTo<Int32Leaf>(&tree));
-    boost::for_each(flatten_tree.float64_keys, flatten_tree.float64_values,
+    boost::for_each(flatten_tree.int32_paths, flatten_tree.int32_values, MergeTo<Int32Leaf>(&tree));
+    boost::for_each(flatten_tree.float64_paths, flatten_tree.float64_values,
                     MergeTo<Float64Leaf>(&tree));
-    boost::for_each(flatten_tree.string_keys, flatten_tree.string_values,
+    boost::for_each(flatten_tree.string_paths, flatten_tree.string_values,
                     MergeTo<StringLeaf>(&tree));
     return tree;
   }
@@ -157,8 +157,8 @@ static inline std::ostream &operator<<(std::ostream &os, const Tree &tree) {
     static void apply(std::ostream &os, const Tree::Node &node, const unsigned int n_indent = 0) {
       const std::string indent(n_indent, ' ');
       if (node.isParent()) {
-        for (const Tree::NamedNode &child : node.asParent()) {
-          os << indent << child.name << ":" << std::endl;
+        for (const Tree::KeyNodePair &child : node.asParent()) {
+          os << indent << child.key << ":" << std::endl;
           apply(os, child.node, n_indent + 2);
         }
       } else if (node.isInt32Leaf()) {

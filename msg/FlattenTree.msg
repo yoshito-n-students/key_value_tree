@@ -1,10 +1,10 @@
 std_msgs/Header header
 
-string[] int32_keys
+string[] int32_paths
 int32[] int32_values
 
-string[] float64_keys
+string[] float64_paths
 float64[] float64_values
 
-string[] string_keys
+string[] string_paths
 string[] string_values

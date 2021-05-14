@@ -17,29 +17,29 @@ TEST(FlattenTree, fromTree) {
   // stamp
   ASSERT_EQ(stamp, flatten_tree.header.stamp);
   // int32 leaf
-  ASSERT_EQ(1, flatten_tree.int32_keys.size());
-  ASSERT_EQ("number/int32", flatten_tree.int32_keys[0]);
+  ASSERT_EQ(1, flatten_tree.int32_paths.size());
+  ASSERT_EQ("number/int32", flatten_tree.int32_paths[0]);
   ASSERT_EQ(1, flatten_tree.int32_values.size());
   ASSERT_EQ(42, flatten_tree.int32_values[0]);
   // float64 leaf
-  ASSERT_EQ(1, flatten_tree.float64_keys.size());
-  ASSERT_EQ("number/float64", flatten_tree.float64_keys[0]);
+  ASSERT_EQ(1, flatten_tree.float64_paths.size());
+  ASSERT_EQ("number/float64", flatten_tree.float64_paths[0]);
   ASSERT_EQ(1, flatten_tree.float64_values.size());
   ASSERT_DOUBLE_EQ(42., flatten_tree.float64_values[0]);
   // string leaf
-  ASSERT_EQ(1, flatten_tree.string_keys.size());
-  ASSERT_EQ("string", flatten_tree.string_keys[0]);
+  ASSERT_EQ(1, flatten_tree.string_paths.size());
+  ASSERT_EQ("string", flatten_tree.string_paths[0]);
   ASSERT_EQ(1, flatten_tree.string_values.size());
   ASSERT_EQ("42", flatten_tree.string_values[0]);
 }
 
 TEST(FlattenTree, toTree) {
   FlattenTree flatten_tree;
-  flatten_tree.int32_keys = {"number/int32/positive", "number/int32/negative"};
+  flatten_tree.int32_paths = {"number/int32/positive", "number/int32/negative"};
   flatten_tree.int32_values = {42, -42};
-  flatten_tree.float64_keys = {"number/float64/positive", "number/float64/negative"};
+  flatten_tree.float64_paths = {"number/float64/positive", "number/float64/negative"};
   flatten_tree.float64_values = {42., -42.};
-  flatten_tree.string_keys = {"string/positive", "string/negative"};
+  flatten_tree.string_paths = {"string/positive", "string/negative"};
   flatten_tree.string_values = {"42", "-42"};
 
   using P = Tree::Parent;

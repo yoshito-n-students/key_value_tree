@@ -20,7 +20,7 @@
 using namespace key_value_tree;
 
 ros::NodeHandlePtr nh;
-std::string key;
+std::string path;
 ros::Publisher value_pub;
 std::string advertised_type;
 
@@ -30,13 +30,13 @@ template <> struct MessageOf<double> { using Type = std_msgs::Float64; };
 template <> struct MessageOf<std::string> { using Type = std_msgs::String; };
 
 template <typename Value>
-void publishValue(const std::vector<std::string> &keys, const std::vector<Value> &values) {
+void publishValue(const std::vector<std::string> &paths, const std::vector<Value> &values) {
   using Message = typename MessageOf<Value>::Type;
   static const std::string value_type = ros::message_traits::datatype<Message>();
 
   // search keys with the query key
-  const std::size_t id = boost::find(keys, key) - keys.begin();
-  if (id < 0 || id >= keys.size()) {
+  const std::size_t id = boost::find(paths, path) - paths.begin();
+  if (id < 0 || id >= paths.size()) {
     return;
   }
 
@@ -46,7 +46,7 @@ void publishValue(const std::vector<std::string> &keys, const std::vector<Value>
     advertised_type = value_type;
   }
   if (advertised_type != value_type) {
-    ROS_ERROR_STREAM_ONCE("Found a value of '" << value_type << "' with the key '" << key << "'. "
+    ROS_ERROR_STREAM_ONCE("Found a value of '" << value_type << "' with the path '" << path << "'. "
                                                << "But the publisher has already advertised with '"
                                                << advertised_type << "'. "
                                                << "Skip publishing.");
@@ -60,16 +60,16 @@ void publishValue(const std::vector<std::string> &keys, const std::vector<Value>
 }
 
 void onFlattenTreeReceived(const FlattenTreeConstPtr &flatten_tree) {
-  publishValue(flatten_tree->int32_keys, flatten_tree->int32_values);
-  publishValue(flatten_tree->float64_keys, flatten_tree->float64_values);
-  publishValue(flatten_tree->string_keys, flatten_tree->string_values);
+  publishValue(flatten_tree->int32_paths, flatten_tree->int32_values);
+  publishValue(flatten_tree->float64_paths, flatten_tree->float64_values);
+  publishValue(flatten_tree->string_paths, flatten_tree->string_values);
 }
 
 int main(int argc, char *argv[]) {
   ros::init(argc, argv, "extract_value");
   nh.reset(new ros::NodeHandle());
 
-  key = ros::param::param<std::string>("~key", "");
+  path = ros::param::param<std::string>("~path", "");
 
   const ros::Subscriber flatten_tree_sub = nh->subscribe("flatten_tree", 1, onFlattenTreeReceived);
 
