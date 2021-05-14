@@ -19,7 +19,11 @@
 
 namespace key_value_tree {
 
-//
+///////////////////////////////////////////////////////
+// Tree structure
+//   - string keys for parent nodes
+//   - integer/floating-point/string values for leaves
+///////////////////////////////////////////////////////
 class Tree : private boost::equality_comparable<Tree> /* supply != from == */ {
 public:
   struct NamedNode;
