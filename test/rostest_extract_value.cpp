@@ -59,7 +59,7 @@ template <typename Message> void runTest(ros::NodeHandle &nh, ros::NodeHandle &p
   }
 
   // received == expected ??
-  ASSERT_TRUE(msg);
+  ASSERT_TRUE(msg.get() != nullptr); // ASSERT_TRUE(msg) does not compile on kinetic
   ASSERT_EQ(expected_value, msg->data);
 }
 
