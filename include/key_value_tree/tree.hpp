@@ -3,16 +3,20 @@
 
 #include <cstdint>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 #include <utility> // for std::forward()
 #include <vector>
 
 #include <key_value_tree/FlattenTree.h>
 #include <ros/time.h>
+#include <xmlrpcpp/XmlRpcValue.h>
 
+#include <boost/lexical_cast.hpp>
 #include <boost/operators.hpp>
 #include <boost/range/algorithm/equal.hpp>
 #include <boost/range/algorithm/find_if.hpp>
+#include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/algorithm_ext/for_each.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/variant.hpp>
@@ -146,6 +150,34 @@ public:
     boost::for_each(flatten_tree.string_paths, flatten_tree.string_values,
                     MergeTo<StringLeaf>(&tree));
     return tree;
+  }
+
+  static Tree fromXmlRpcValue(const XmlRpc::XmlRpcValue &value) {
+    struct Impl {
+      using Value = XmlRpc::XmlRpcValue;
+      static Node apply(const Value &value) {
+        switch (value.getType()) {
+        case Value::TypeInt:
+          return static_cast<int>(value);
+        case Value::TypeDouble:
+          return static_cast<double>(value);
+        case Value::TypeString:
+          return static_cast<std::string>(value);
+        case Value::TypeStruct: {
+          Parent parent;
+          boost::for_each(value, [&parent](const Value::ValueStruct::value_type &child) {
+            parent.push_back({child.first, apply(child.second)});
+          });
+          return parent;
+        }
+        default:
+          throw std::runtime_error("fromXmlRpcValue(): Unexpected value type (" +
+                                   boost::lexical_cast<std::string>(value.getType()) + ")");
+        }
+      }
+    };
+
+    return Impl::apply(value);
   }
 
 private:
