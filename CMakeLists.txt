@@ -220,5 +220,29 @@ if(TARGET unit_tests)
   )
 endif()
 
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+
+  add_rostest_gtest(
+    rostest_extract_value 
+    test/rostest_extract_value.test 
+    test/rostest_extract_value.cpp
+  )
+  add_rostest_gtest(
+    rostest_from_xmlrpc_value 
+    test/rostest_from_xmlrpc_value.test 
+    test/rostest_from_xmlrpc_value.cpp
+  )
+
+  target_link_libraries(
+    rostest_extract_value 
+    ${catkin_LIBRARIES}
+  )
+  target_link_libraries(
+    rostest_from_xmlrpc_value 
+    ${catkin_LIBRARIES}
+  )
+endif()
+
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)

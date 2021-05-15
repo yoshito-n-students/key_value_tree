@@ -1,0 +1,3 @@
+<launch>
+    <test test-name="rostest_from_xmlrpc_value" pkg="key_value_tree" type="rostest_from_xmlrpc_value" />
+</launch>

@@ -1,0 +1,64 @@
+<launch>
+    <node name="extract_int32" pkg="key_value_tree" type="extract_value" output="screen">
+        <remap from="flatten_tree" to="int32_test/flatten_tree" />
+        <remap from="value" to="int32_test/value" />
+        <param name="path" value="number/int32/positive" />
+    </node>
+
+    <node name="extract_float64" pkg="key_value_tree" type="extract_value" output="screen">
+        <remap from="flatten_tree" to="float64_test/flatten_tree" />
+        <remap from="value" to="float64_test/value" />
+        <param name="path" value="number/float64/negative" />
+    </node>
+
+    <node name="extract_string" pkg="key_value_tree" type="extract_value" output="screen">
+        <remap from="flatten_tree" to="string_test/flatten_tree" />
+        <remap from="value" to="string_test/value" />
+        <param name="path" value="string/positive" />
+    </node>
+
+    <test test-name="rostest_extract_value" pkg="key_value_tree" type="rostest_extract_value">
+        <rosparam>
+            int32_test:
+                tree:
+                    number:
+                        int32:
+                            positive: 42
+                            negative: -42
+                        float64:
+                            positive: 42.
+                            negative: -42.
+                    string:
+                        positive: "42"
+                        negative: "42"
+                expected_value: 42
+            float64_test:
+                tree:
+                    number:
+                        int32:
+                            positive: 42
+                            negative: -42
+                        float64:
+                            positive: 42.
+                            negative: -42.
+                    string:
+                        positive: "42"
+                        negative: "42"
+                expected_value: -42.
+            string_test:
+                tree:
+                    number:
+                        int32:
+                            positive: 42
+                            negative: -42
+                        float64:
+                            positive: 42.
+                            negative: -42.
+                    string:
+                        positive: "42"
+                        negative: "42"
+                expected_value: "42"
+        </rosparam>
+    </test>
+
+</launch>
