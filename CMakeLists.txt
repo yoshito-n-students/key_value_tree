@@ -204,18 +204,18 @@ target_link_libraries(
 
 ## Add gtest based cpp test target and link libraries
 catkin_add_gtest(
-  unit_tests 
+  key_value_tree_unit_tests 
   test/unit_tests_flatten_tree.cpp
   test/unit_tests_main.cpp
   test/unit_tests_tree.cpp
 )
-if(TARGET unit_tests)
-  add_dependencies(unit_tests 
+if(TARGET key_value_tree_unit_tests)
+  add_dependencies(key_value_tree_unit_tests 
     ${${PROJECT_NAME}_EXPORTED_TARGETS} 
     ${catkin_EXPORTED_TARGETS}
   )
   target_link_libraries(
-    unit_tests 
+    key_value_tree_unit_tests 
     ${catkin_LIBRARIES}
   )
 endif()
@@ -224,22 +224,22 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
 
   add_rostest_gtest(
-    rostest_extract_value 
+    key_value_tree_rostest_extract_value 
     test/rostest_extract_value.test 
     test/rostest_extract_value.cpp
   )
   add_rostest_gtest(
-    rostest_from_xmlrpc_value 
+    key_value_tree_rostest_from_xmlrpc_value 
     test/rostest_from_xmlrpc_value.test 
     test/rostest_from_xmlrpc_value.cpp
   )
 
   target_link_libraries(
-    rostest_extract_value 
+    key_value_tree_rostest_extract_value 
     ${catkin_LIBRARIES}
   )
   target_link_libraries(
-    rostest_from_xmlrpc_value 
+    key_value_tree_rostest_from_xmlrpc_value 
     ${catkin_LIBRARIES}
   )
 endif()
