@@ -135,6 +135,10 @@ add_executable(
   extract_value 
   src/extract_value.cpp
 )
+add_executable(
+  echo
+  src/echo.cpp
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -149,10 +153,19 @@ add_dependencies(
   ${${PROJECT_NAME}_EXPORTED_TARGETS} 
   ${catkin_EXPORTED_TARGETS}
 )
+add_dependencies(
+  echo
+  ${${PROJECT_NAME}_EXPORTED_TARGETS} 
+  ${catkin_EXPORTED_TARGETS}
+)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(
   extract_value
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(
+  echo
   ${catkin_LIBRARIES}
 )
 
