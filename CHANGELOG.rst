@@ -6,6 +6,7 @@ Changelog for package key_value_tree
 ------------------
 * echo node
 * Unique test names
+* Contributors: Yoshito Okada, Ryota Suzuki
 
 0.0.1 (2021-05-17)
 ------------------
