@@ -193,8 +193,16 @@ static inline std::ostream &operator<<(std::ostream &os, const Tree &tree) {
       const std::string indent(n_indent, ' ');
       if (node.isParent()) {
         for (const Tree::KeyNodePair &child : node.asParent()) {
-          os << indent << child.key << ":" << std::endl;
-          apply(os, child.node, n_indent + 2);
+          if (child.node.isInt32Leaf()) {
+            os << indent << child.key << ": " << child.node.asInt32Leaf() << std::endl;
+          } else if (child.node.isFloat64Leaf()) {
+            os << indent << child.key << ": " << child.node.asFloat64Leaf() << std::endl;
+          } else if (child.node.isStringLeaf()) {
+            os << indent << child.key << ": '" << child.node.asStringLeaf() << "'" << std::endl;
+          } else {
+            os << indent << child.key << ":" << std::endl;
+            apply(os, child.node, n_indent + 2);
+          }
         }
       } else if (node.isInt32Leaf()) {
         os << indent << node.asInt32Leaf() << std::endl;
