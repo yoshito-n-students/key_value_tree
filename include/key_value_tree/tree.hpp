@@ -158,8 +158,9 @@ public:
       static Node apply(const Value &value) {
         switch (value.getType()) {
         case Value::TypeInt:
-          // use a const_cast before conversion because there is no const version 
-          // of Value::operator int&() as of kinetic (should be safe if only reads the value)
+          // use a const_cast before conversion
+          // because there is no const version of Value::operator int&() as of kinetic
+          // (should be safe if only reads the value)
           return static_cast<int>(const_cast<Value &>(value));
         case Value::TypeDouble:
           return static_cast<double>(const_cast<Value &>(value));
