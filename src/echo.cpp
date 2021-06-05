@@ -15,7 +15,7 @@ void echo(const kvt::FlattenTreeConstPtr &msg) {
 int main(int argc, char *argv[]) {
   ros::init(argc, argv, "echo");
   ros::NodeHandle nh;
-  ros::Subscriber sub = nh.subscribe("flatten_tree", 1, echo);
+  const ros::Subscriber sub = nh.subscribe("flatten_tree", 1, echo);
   ros::spin();
   return 0;
 }

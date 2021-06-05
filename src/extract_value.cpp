@@ -17,7 +17,7 @@
 
 #include <boost/range/algorithm/find.hpp>
 
-using namespace key_value_tree;
+namespace kvt = key_value_tree;
 
 ros::NodeHandlePtr nh;
 std::string path;
@@ -59,7 +59,7 @@ void publishValue(const std::vector<std::string> &paths, const std::vector<Value
   value_pub.publish(msg);
 }
 
-void onFlattenTreeReceived(const FlattenTreeConstPtr &flatten_tree) {
+void onFlattenTreeReceived(const kvt::FlattenTreeConstPtr &flatten_tree) {
   publishValue(flatten_tree->int32_paths, flatten_tree->int32_values);
   publishValue(flatten_tree->float64_paths, flatten_tree->float64_values);
   publishValue(flatten_tree->string_paths, flatten_tree->string_values);
@@ -74,5 +74,6 @@ int main(int argc, char *argv[]) {
   const ros::Subscriber flatten_tree_sub = nh->subscribe("flatten_tree", 1, onFlattenTreeReceived);
 
   ros::spin();
+  
   return 0;
 }
